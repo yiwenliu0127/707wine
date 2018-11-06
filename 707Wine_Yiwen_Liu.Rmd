@@ -1,0 +1,18 @@
+---
+title: "707Wine_Yiwen_Liu"
+output: html_notebook
+---
+```{r}
+library(tidyverse)
+library(readxl)
+library(reshape2)
+```
+
+# Read data
+```{r}
+wine <- read_csv("~/Dropbox/Duke/707/Project/707Wine/Data/wine-reviews/winemag-data-130k-v2.csv")
+rownames(wine) <- wine$X1
+wine %>% select(country, designation, points, price, province, region_1, region_2, taster_name, taster_twitter_handle, title, variety, winery) -> wine
+wine
+```
+
