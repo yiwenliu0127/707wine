@@ -15,4 +15,7 @@ rownames(wine) <- wine$X1
 wine %>% select(country, designation, points, price, province, region_1, region_2, taster_name, taster_twitter_handle, title, variety, winery) -> wine
 wine
 ```
+```{r}
+
+```
 
