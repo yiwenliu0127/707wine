@@ -110,23 +110,29 @@ clean <- function(df){
 
 ```{r}
 # check data
+dim(data)
 summary(data)
 ```
+
 ```{r}
 # split train test
 set.seed(2018)
 train.index <- sample(2/3 * nrow(data))
 train <- data[train.index,]
 test <- data[-train.index,]
+dim(train)
 summary(train)
+dim(test)
 summary(test)
 ```
+
 ```{r}
 # clean train
 clean_train <- train[lapply(train, function(x) sum(is.na(x)) / length(x))  < 0.1]
 clean_train <- clean(clean_train)
 clean_train <- clean_train %>% select(-title, -country)
 clean_train <- clean_train %>% select(-Scaled_Points, -Percentile_Points)
+dim(clean_train)
 ```
 
 
@@ -139,7 +145,7 @@ ggplot(aes(x=points, y=price, col = variety), data = clean_train) + geom_jitter(
 ```{r}
 # CV on train
 set.seed(2018)
-k <- 5
+k <- 10
 sp <- createFolds(train$variety, k)
 price_fold_error <- matrix(NA, nrow=k, ncol=5)
 pt_fold_error <- matrix(NA, nrow=k, ncol=5)
@@ -208,7 +214,7 @@ for(i in 1:k){
     
     # gbm
     gbmFit_price <- gbm(formula = price ~ ., data = cleanwine_train, 
-                  n.trees = 100, shrinkage = 0.01, interaction.depth = 2, cv.folds = 10, 
+                  n.trees = 1000, shrinkage = 0.05, interaction.depth = 2, cv.folds = 10, 
                   distribution = "laplace", verbose = FALSE)
 
     best_iter_price <- gbm.perf(gbmFit_price, method = "cv", plot.it = F)
@@ -216,7 +222,7 @@ for(i in 1:k){
     price_fold_error[i,3] <- mean(abs(cleanwine_test$price - gbm_price_pred))
     
     gbmFit_pt <- gbm(formula = points ~ ., data = cleanwine_train, 
-                  n.trees = 100, shrinkage = 0.01, interaction.depth = 2, cv.folds = 10, 
+                  n.trees = 1000, shrinkage = 0.05, interaction.depth = 2, cv.folds = 10, 
                   distribution = "laplace", verbose = FALSE) 
 
     best_iter_pt <- gbm.perf(gbmFit_pt, method = "cv", plot.it = F)
@@ -247,6 +253,7 @@ for(i in 1:k){
     pt_fold_error[i,5] <- mean((cleanwine_test$points - r.err.pt)^2)
 }
 ```
+
 ```{r}
 colnames(price_fold_error) <- c("random_forest", "svm", "gbm", "lasso", "ridge")
 colnames(pt_fold_error) <- c("random_forest", "svm", "gbm", "lasso", "ridge")
@@ -260,6 +267,7 @@ clean_test <- test[lapply(test, function(x) sum(is.na(x)) / length(x) ) < 0.1]
 clean_test <- clean(clean_test)
 clean_test <- clean_test %>% select(-title, -country)
 clean_test <- clean_test %>% select(-Scaled_Points, -Percentile_Points)
+dim(clean_test)
 # test.data.price <- test %>% select(-price)
 # test.data.price <- sparse.model.matrix(~., test.data.price)[,-1]
 # test.data.pt <- test %>% select(-points)
@@ -273,6 +281,7 @@ mean(abs(clean_test$price - result_test_price))
 result_test_pt <- predict(svm_test_pt, clean_test)
 mean((clean_test$points - result_test_pt)^2)
 ```
+
 ```{r}
 price_pt_df <- data.frame(cbind(clean_test$points, clean_test$price, result_test_price, result_test_pt))
 colnames(price_pt_df) <- c("points", "price", "pred_price", "pred_point")
