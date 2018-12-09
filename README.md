@@ -13,8 +13,8 @@ methods using Cross-Validation, we decided a Support Vector Machine had the best
 performance.
 
 Challenges Faced:
-Large quantities of missing data
-Few continuous variables
-Categorical variables with many levels
-Extracting the correct vintage from wine label
-Too many observations for computationally intense methods
+-  Large quantities of missing data
+-  Few continuous variables
+-  Categorical variables with many levels
+-  Extracting the correct vintage from wine label
+-  Too many observations for computationally intense methods
