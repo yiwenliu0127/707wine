@@ -1,0 +1,42 @@
+---
+title: "707Wine_Yiwen_Liu"
+output: html_notebook
+---
+```{r}
+library(readxl)
+library(reshape2)
+library(tidyverse)
+```
+
+# Read data
+```{r}
+wine <- read_csv("~/Dropbox/Duke/707/Project/707Wine/Data/wine-reviews/winemag-data-130k-v2.csv")
+rownames(wine) <- wine$X1
+#wine %>% dplyr::select(-X1) %>% dplyr::select(description)
+wine %>% dplyr::select(country, designation, points, price, province, region_1, region_2, taster_name, taster_twitter_handle, title, variety, winery) -> wine
+#dim(wine)
+#wine[,2:14] -> wine
+wine
+```
+```{r}
+wine_fac <- c("country", "designation", "province", "region_1", "region_2", "taster_name", "taster_twitter_handle", "title", "variety", "winery")
+wine[,wine_fac] <- lapply(wine[,wine_fac], factor)
+summary(wine)
+```
+```{r}
+# drop designation, region_2 and taster_twitter
+set.seed(1123)
+wine %>% dplyr::select(-c(designation, region_2, taster_twitter_handle)) -> wine
+wine_10p <- wine[sample.int(nrow(wine), size = 0.1 * nrow(wine)),]
+dim(wine)
+dim(wine_10p)
+```
+```{r}
+ggplot(aes(x = price, y = points), data = wine_10p) + geom_point() + geom_smooth()
+```
+
+```{r}
+# save subset csv and session
+write_csv(wine_10p, "~/Dropbox/Duke/707/Project/707Wine/Data/wine-reviews/wine_random_10percent.csv")
+```
+
